@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Entregas - FIRPLAK S.A</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light custom-navbar">
+        <div class="container">
+            <h1 class="navbar-brand">Lista de Entregas - FIRPLAK S.A</h1>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <a href="/formulario" class="btn btn-primary mb-3">Agregar Entrega</a>
+        <div class="row">
+            {% for entrega in entregas %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-text"><strong>Número de Guía:</strong> {{ entrega.Numero_Guia_Transporte }}</h5>
+                        <p class="card-text"><strong>Cliente:</strong> {{ entrega.Cliente }}</p>
+                        <p class="card-text"><strong>Destino:</strong> {{ entrega.Destino }}</p>
+                        <p class="card-text"><strong>Fecha de Entrega:</strong> {{ entrega.Fecha_Entrega }}</p>
+                        <p class="card-text"><strong>Estado:</strong> {{ entrega.Estado_Entrega }}</p>
+                        <p class="card-text"><strong>Transportadora:</strong> {{ entrega.Tipo_Transportadora }}</p>
+                        <p class="card-text"><strong>POD Recibido:</strong> {% if entrega.POD_Recibido %} Sí {% else %} No {% endif %}</p>
+                        <p class="card-text"><strong>Observaciones:</strong> {{ entrega.Observaciones }}</p>
+                        <!-- Botón para eliminar el registro -->
+                        <form id="eliminar-{{ entrega.ID_Entrega }}" action="{{ url_for('borrar_entrega', entrega_id=entrega.ID_Entrega) }}" method="POST">
+                            <button type="button" class="btn btn-danger" onclick="confirmarEliminacion('{{ entrega.ID_Entrega }}')">Eliminar</button>
+                        </form>
+                        <!-- Formulario para actualizar el estado -->
+                        {% if entrega.Estado_Entrega != 'Entrega exitosa' %}
+                        <form id="actualizar-{{ entrega.ID_Entrega }}" action="{{ url_for('actualizar_estado', entrega_id=entrega.ID_Entrega) }}" method="POST">
+                            <button type="submit" class="btn btn-success">Actualizar Estado</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Script para mostrar la alerta de confirmación antes de eliminar -->
+    <script>
+        function confirmarEliminacion(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+                document.getElementById('eliminar-' + id).submit();
+            }
+        }
+    </script>
+
+    <!-- Script para mostrar la alerta de entrega actualizada después de actualizar -->
+    {% if actualizado %}
+    <script>
+        window.onload = function() {
+            alert('Estado de la entrega actualizado exitosamente');
+        };
+    </script>
+    {% endif %}
+
+</body>
+
+</html>

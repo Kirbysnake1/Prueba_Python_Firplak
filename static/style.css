@@ -1,0 +1,32 @@
+body {
+    background: url("https://wallpapercave.com/uwp/uwp4214530.png");
+}
+
+ /* Estilos personalizados */
+ .custom-navbar {
+    background: url("https://wallpapercave.com/wp/wp7542786.jpg");
+}
+.navbar-brand {
+    font-weight: bold; /* Negrita */
+    color: #343a40; /* Color del texto */
+}
+
+
+/*formulario */
+
+        /* Estilos personalizados */
+        .background-container {
+            background-size: cover; /* Escalar la imagen para cubrir todo el contenedor */
+            background-repeat: no-repeat; /* No repetir la imagen de fondo */
+            height: 10vh; /* Altura del contenedor para ocupar toda la pantalla */
+            display: flex; /* Usar flexbox para centrar el contenido */
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Color de fondo blanco con opacidad */
+            padding: 30px; /* Espaciado interno */
+            border-radius: 10px; /* Borde redondeado */
+            margin-top: 30px; /* Ajuste el margen superior para que el formulario no se oculte al alejarse */
+        }

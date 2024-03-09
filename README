@@ -1,0 +1,124 @@
+Documentación de Validaciones
+Este documento describe las validaciones implementadas en la aplicación para garantizar la integridad y consistencia de los datos.
+
+1. Validaciones en el Formulario de Entrega
+1.1. Campos Obligatorios
+Número de Guía de Transporte: Se requiere que el usuario ingrese un número de guía válido.
+Número de Documento: Se debe proporcionar un número de documento válido.
+Fecha de Despacho: La fecha de despacho debe ser una fecha válida en el formato especificado.
+Cliente: Se debe seleccionar un cliente válido de la lista desplegable.
+Destino: Se debe especificar el destino de la entrega.
+Fecha de Entrega: La fecha de entrega debe ser posterior a la fecha de despacho.
+Estado de Entrega: Se debe seleccionar un estado válido para la entrega.
+Tipo de Transportadora: Se debe especificar el tipo de transportadora utilizado.
+POD Recibido: Se debe marcar esta casilla si el comprobante de entrega (POD) ha sido recibido.
+1.2. Validaciones Adicionales
+Número de Guía Único: Se verifica que el número de guía ingresado no exista previamente en la base de datos para evitar duplicados.
+Fecha de Entrega Futura: Se verifica que la fecha de entrega especificada no sea en el futuro para evitar entregas programadas incorrectas.
+Estado de Entrega Coherente: Se valida que el estado de entrega sea coherente con la situación actual, evitando cambios inapropiados en el estado de la entrega.
+2. Validaciones en la Vista de Entregas
+2.1. Indicador de Actualización
+Se proporciona un indicador visual en la vista de entregas cuando se realiza una actualización exitosa del estado de una entrega.
+3. Validaciones en la Eliminación de Entregas
+3.1. Confirmación de Eliminación
+Antes de eliminar una entrega, se solicita al usuario una confirmación para evitar eliminaciones accidentales.
+
+Herramientas utilizadas:
+
+Lenguaje Python
+Librerias instaladas: 
+- import pyodbc
+framework: Flask
+BS: SQL SERVER
+
+
+---------------- Prueba Tecnica ----------------
+
+FIRPLAK S.A como compañía de Manufactura tiene como core de negocio la Fabricación de
+productos que representan soluciones en Baños, Cocinas y Zonas de Labores para los canales de
+comercialización CONSTRUCTOR (Constructoras), DISTRIBUCIÓN (Almacenes), y Clientes Finales (ECommerce).
+Su Proceso Logístico desde el punto de vista de documentos usados en cada etapa de la cadena es
+el siguiente:
+Los Pedidos llegan y son procesados de dos formas: manualmente mediante la digitación de una
+persona que los ingresa o semiautomáticamente a través de órdenes de compra que llegan
+directamente al ERP de la compañía proveniente de los proveedores mediante archivo EDI.
+Estos pedidos, de cualquier forma, son procesados y adquieren un consecutivo. Cada pedido tiene
+consigo la posibilidad de tener varias líneas de pedido y a su vez cada línea de pedido puede tener
+una fecha de entrega distinta. Así, el pedido 1220 puede tener dos líneas, una con el producto (SKU)
+A por 50 unidades para el 15 de agosto de 2019, y otra con el producto (SKU) B por 200 unidades
+para el 15 de septiembre del mismo año.
+Según el tipo de producto, de cada línea puede generarse unas órdenes de Fabricación (con
+consecutivo propio) para Fabricar sobre pedido (MTO) o simplemente puede generarse una
+necesidad de reserva de inventario para el tipo de productos que se encuentra en inventario (MTS).
+Para cada caso existe una bodega tanto física como en el sistema, llamadas PT01 en la que se
+almacena el producto de Línea o Stock (MTS) o la bodega PT02 que es adonde ingresa la mercancía
+de órdenes de producción bajo pedido. Para este ejercicio es solamente a través de estas bodegas.
+Por lo tanto, podríamos decir que así también las líneas de un Pedido pueden ser MTO o MTS. Una
+línea de pedido MTO se envía a Fabricar, y una vez fabricada se ingresa a la bodega PT02 y se reserva
+automáticamente en esta bodega y una línea MTS se debe tomar (reservar) de la bodega PT01
+manualmente donde se encuentra ya la mercancía disponible.
+Una vez asignadas las mercancías de las líneas de pedido se procede con las entregas. Un documento
+de entrega representa es una remisión que representa el Envío/Despacho por las líneas de pedido
+que se encuentren completas (reservadas/asignadas) y tengan una misma fecha de despacho, este
+también es un documento con un número consecutivo propio. Por Política de la compañía las líneas
+de pedido solo pueden ser enviadas cuando se encuentren completas y no antes de forma parcial.
+En cambio, como lo vimos anteriormente, un Pedido si puede tener despachos parciales puesto que
+cada línea de pedido puede tener una fecha de Entrega a cliente diferente.
+Nota: Le Fecha de despacho es la fecha en la que se debe enviar la mercancía y la Fecha de Entrega
+representa la fecha en la que la mercancía debe ser entregada en las manos a los clientes. Esta
+diferenciación es importante porque existen destinos nacionales que en su transporte toma más de
+un día y también porque FIRPLAK S.A ha decidido desde su departamento Logístico tercerizar toda
+la operación de transporte. Lo cual implica entregar una responsabilidad importante y diferenciar el
+momento de Despacho, y el momento de la Entrega final al cliente.
+Los documentos de Entrega como vimos nacen de un mismo Pedido. Sin embargo, un Camión puede
+realizar un recorrido con diferentes documentos de entrega. Para todos los documentos de entrega
+que vayan para un mismo cliente y destino se les asigna una y solo una Guía de transporte con un
+número consecutivo único. Si los documentos de entrega para la misma fecha de despacho van
+dirigidos para un mismo cliente, ejemplo una cadena de Almacenes, pero destinos diferentes, esto
+ya representa la necesidad 2 guías de transporte diferentes. Una guía de transporte puede tener
+asociados diferentes pedidos, y por ende diferentes líneas de pedido, y por ende diferentes
+documentos de entrega, pero siempre cumpliendo las 3 condiciones: Una misma Fecha de
+Despacho, Un Mismo Destino, Un Mismo Cliente.
+Una vez Entregada una Guía de Transporte, el Transportador debe realizar una Prueba de Entrega
+(POD), esto se compone de una fotografía de la Guía de Transporte firmada por el cliente en el
+momento de Entrega y una Fotografía de cada documento de entrega (remisión) firmado por el
+cliente o con la observación escrita en el caso de haberse presentado una novedad como un
+quebrado en Transporte, un faltante, un sobrante, etc.
+Con estas POD´s que no son más que documentos anteriores firmados, es que FIRPLAK S.A procede
+a realizar el proceso de Facturación y Radicación de Facturas. Cada Factura corresponde a uno o
+varios documentos de Entrega(remisión) entregado a cliente en perfecto estado, pero en el caso de
+que sean varias entregas solo será posible siempre y cuando se cumplan las condiciones: Un mismo
+Cliente, Un mismo pedido. No es posible que 1 documento de entrega tenga 2 facturas asociadas.
+Una vez hecha la factura se procede a su Radicación, ya sea electrónicamente vía Email, o
+físicamente con un servicio de Mensajería especializada. En el caso de sea con Mensajería
+Especializada también se incurre en el transporte de documentos con unas Guías de Transporte con
+un consecutivo único con el cual se puede hacer trazabilidad en una plataforma Web
+Aquí es donde se encuentra el problema y la necesidad de FIRPLAK S.A. Las Transportadoras de
+mercancía que la compañía usa para tercerizar la operación tienen un buen servicio de Transporte,
+pero mal servicio de transmisión de la información, específicamente los POD´s. Existen dos tipos de
+Transportadoras. Aquellas que cuentan con una Plataforma Web en la que se puede consultar el
+estado de las Guías de Transporte y los documentos asociados, y aquellas que no poseen estas
+plataformas y por ende la Trazabilidad debe hacerse por Teléfono o por Correos Electrónicos.
+Aquellas de este segundo grupo representan el 80% por ciento de la operación de Transporte.
+Como un ejercicio de cuidado del flujo de caja de la compañía, la Dirección de Logística debe
+asegurar que la Radicación de las Facturas sea en el menos tiempo posible a través de una correcta
+trazabilidad de las entregas. El problema está radicando en la información que no llega a tiempo.
+Las POD´s tardan días en llegar a los correos de los ejecutivos de logística y por ende la Facturación
+se está tardando más de lo normal, esto implica que FIRPLAK está haciendo un recaudo tardío de
+sus ventas y por ende comprometiendo su flujo de caja.
+Si usted fuera a apoyar a la Dirección de Logística a desarrollar una solución y entre ellas una
+herramienta de Trazabilidad integrada para que funcione en tiempo real,
+1). Diseñe el Formato (Campos y Ordenamiento) de la Tabla Principal de la Base de Datos que
+propondría para el desarrollo de una herramienta que permita trazabilidad detallada e integrada de
+las entregas de FIRPLAK S.A que faciliten el rastreo en cualquier nodo del proceso y específicamente
+apoyen el fin último de Radicación Oportuna de Facturas. Así mismo, que facilite el cálculo de
+Indicadores que evalúen la gestión de la logística en cualquier etapa del proceso.
+2.) Diseñe un producto Mínimo viable donde pueda suplir la necesidad de trazabilidad que se tiene
+con el 80% del Transporte, y asuma que no hay la posibilidad de que hacer cambios en la selección
+de estos proveedores de Transporte. Para este producto mínimo viable puede usar el lenguaje,
+bases de datos, framework, entorno de desarrollo o metodología en la que se sienta más fuerte,
+aquí queremos medir sus habilidades en bases de datos, capacidad de análisis, priorización,
+creatividad y recursividad, siéntase tranquilo en el uso de las habilidades que posee y recuerde que
+buscamos un prototipo funcional al cual podamos acceder e interactuar con el desarrollo y con usted
+en un espacio presencial donde aprovechemos para conocernos cara a cara সহ঺঻.
+Ante la información necesaria que no se encuentre en esta Caso asuma algunos escenarios
